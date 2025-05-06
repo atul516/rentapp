@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flat Rent System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Flat Rent Generation System</h1>
+
+<section id="new-flat">
+  <h2>New Flat Entry</h2>
+  <input id="flatNum" placeholder="Flat Number" />
+  <input id="location" placeholder="Location" />
+  <input id="rent" placeholder="Rent" />
+  <input id="tenant" placeholder="Tenant Name" />
+  <button onclick="addFlat()">Add Flat</button>
+  <h4>Existing Flats:</h4>
+  <ul id="existing-flats"></ul>
+</section>
+
+  <section id="update-rent">
+    <h2>Update Rent</h2>
+    <select id="rent-flat-select"></select>
+    <input id="new-rent" placeholder="New Rent" />
+    <button onclick="updateRent()">Update Rent</button>
+  </section>
+
+  <section id="update-tenant">
+    <h2>Update Tenant Name</h2>
+    <select id="tenant-flat-select"></select>
+    <input id="new-tenant" placeholder="New Tenant Name" />
+    <button onclick="updateTenant()">Update Tenant</button>
+  </section>
+
+<section id="electricity-entry">
+  <h2>Electricity Reading Entry</h2>
+  <select id="reading-flat-select" onchange="fetchPreviousReading()"></select>
+  <input id="month" placeholder="Month (YYYY-MM)" onblur="fetchPreviousReading()" />
+  <input id="reading" placeholder="New Reading" />
+  <div>Previous Reading: <span id="previous-reading">-</span></div>
+  <button onclick="addReading()">Add Reading</button>
+</section>
+
+  <section id="rate-entry">
+    <h2>Electricity Rate Entry</h2>
+    <input id="rate-month" placeholder="Month (YYYY-MM)" />
+    <input id="rate-value" placeholder="Rate per Unit" />
+    <button onclick="addRate()">Add Rate</button>
+  </section>
+
+  <section id="report-generation">
+    <h2>Generate Charges Report</h2>
+    <select id="report-flat-select"></select>
+    <input id="report-month" placeholder="Month (YYYY-MM)" />
+    <input id="maintenance" placeholder="Maintenance Charge" />
+    <button onclick="generateReport()">Generate Report</button>
+    <div id="report-preview"></div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

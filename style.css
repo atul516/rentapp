@@ -1,0 +1,104 @@
+/* Base Styling */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 5px;
+  margin-top: 40px;
+}
+
+section {
+  background: #ffffff;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  max-width: 700px;
+  width: 100%;
+}
+
+input,
+select,
+button {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 12px;
+  margin: 12px 0;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #43a047;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+#existing-flats li {
+  margin-bottom: 5px;
+}
+
+#report-card {
+  background-color: #fefefe;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+#report-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+/* Responsive Typography */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  section {
+    padding: 15px;
+    margin: 15px auto;
+  }
+
+  input,
+  select,
+  button {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  #report-card {
+    font-size: 14px;
+    padding: 15px;
+  }
+}

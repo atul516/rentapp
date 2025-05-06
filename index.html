@@ -8,92 +8,95 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+  <div class="container">
+    <h1>🏢 Flat Rent Management System</h1>
 
-  <!-- New Flat Entry -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>New Flat Entry</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <input id="flatNum" placeholder="Flat Number" />
-      <input id="location" placeholder="Location" />
-      <input id="rent" placeholder="Rent" />
-      <input id="tenant" placeholder="Tenant Name" />
-      <button onclick="addFlat()">Add Flat</button>
-      <h4>Existing Flats:</h4>
-      <ul id="existing-flats"></ul>
-    </div>
-  </section>
+    <!-- Section: Add New Flat -->
+    <section class="card">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Add New Flat</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <input type="text" id="flatNum" placeholder="Flat Number" />
+        <input type="text" id="rent" placeholder="Rent" />
+        <input type="text" id="tenant" placeholder="Tenant Name" />
+        <button onclick="addFlat()">Add Flat</button>
 
-  <!-- Update Rent -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Update Rent</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <select id="rent-flat-select"></select>
-      <input id="new-rent" placeholder="New Rent" />
-      <button onclick="updateRent()">Update Rent</button>
-    </div>
-  </section>
+        <h4>Existing Flats:</h4>
+        <ul id="existing-flats"></ul>
+      </div>
+    </section>
 
-  <!-- Update Tenant -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Update Tenant Name</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <select id="tenant-flat-select"></select>
-      <input id="new-tenant" placeholder="New Tenant Name" />
-      <button onclick="updateTenant()">Update</button>
-    </div>
-  </section>
+    <!-- Section: Update Rent -->
+    <section class="card collapsed">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Update Rent</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <select id="rent-flat-select"></select>
+        <input type="text" id="new-rent" placeholder="New Rent" />
+        <button onclick="updateRent()">Update Rent</button>
+      </div>
+    </section>
 
-  <!-- Electricity Reading -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Electricity Reading Entry</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <select id="reading-flat-select" onchange="fetchPreviousReading()"></select>
-      <input id="month" placeholder="Month (YYYY-MM)" onblur="fetchPreviousReading()" />
-      <input id="reading" placeholder="New Reading" />
-      <div>Previous Reading: <span id="previous-reading">-</span></div>
-      <button onclick="addReading()">Add Reading</button>
-    </div>
-  </section>
+    <!-- Section: Update Tenant -->
+    <section class="card collapsed">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Update Tenant Name</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <select id="tenant-flat-select"></select>
+        <input type="text" id="new-tenant" placeholder="New Tenant Name" />
+        <button onclick="updateTenant()">Update Tenant</button>
+      </div>
+    </section>
 
-  <!-- Electricity Rate -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Electricity Rate</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <input id="rate-month" placeholder="Month (YYYY-MM)" />
-      <input id="rate-value" placeholder="Rate per Unit (₹)" />
-      <button onclick="addRate()">Save Rate</button>
-    </div>
-  </section>
+    <!-- Section: Enter Electricity Reading -->
+    <section class="card collapsed">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Enter Electricity Reading</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <select id="reading-flat-select" onchange="fetchPreviousReading()"></select>
+        <input type="month" id="month" onchange="fetchPreviousReading()" />
+        <p>Previous Reading: <span id="previous-reading">-</span></p>
+        <input type="number" id="reading" placeholder="New Reading" />
+        <button onclick="addReading()">Save Reading</button>
+      </div>
+    </section>
 
-  <!-- Generate Total Charges Report -->
-  <section class="collapsible">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h2>Generate Total Charges Report</h2>
-      <span class="toggle-arrow">▼</span>
-    </div>
-    <div class="section-body">
-      <select id="report-flat-select"></select>
-      <input id="report-month" placeholder="Month (YYYY-MM)" />
-      <input id="maintenance" placeholder="Maintenance Charges" />
-      <button onclick="generateReport()">Generate & Download Report</button>
-      <div id="report-preview" style="margin-top: 20px;"></div>
-    </div>
-  </section>
+    <!-- Section: Set Rate -->
+    <section class="card collapsed">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Set Electricity Rate</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <input type="month" id="rate-month" />
+        <input type="number" id="rate-value" placeholder="Rate per Unit (₹)" />
+        <button onclick="addRate()">Save Rate</button>
+      </div>
+    </section>
+
+    <!-- Section: Generate Total Charges Report -->
+    <section class="card collapsed">
+      <div class="card-header" onclick="toggleSection(this)">
+        <h2>Generate Charges Report</h2>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <select id="report-flat-select"></select>
+        <input type="month" id="report-month" />
+        <input type="number" id="maintenance" placeholder="Maintenance Charges" />
+        <button onclick="generateReport()">Generate & Download</button>
+        <div id="report-preview" class="report-preview"></div>
+      </div>
+    </section>
+  </div>
 
   <script src="script.js"></script>
 </body>

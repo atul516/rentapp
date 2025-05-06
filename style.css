@@ -102,3 +102,41 @@ ul {
     padding: 15px;
   }
 }
+/* Collapsible Sections */
+.collapsible {
+  position: relative;
+  border: 1px solid #ddd;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  border: none;
+  padding-bottom: 0;
+}
+
+.toggle-arrow {
+  font-size: 20px;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.collapsed .toggle-arrow {
+  transform: rotate(-90deg);
+}
+
+.section-body {
+  padding-top: 15px;
+}
+
+.collapsed .section-body {
+  display: none;
+}

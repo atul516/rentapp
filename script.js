@@ -153,3 +153,7 @@ function generateReport() {
     });
   });
 }
+function toggleSection(headerElement) {
+  const section = headerElement.parentElement;
+  section.classList.toggle('collapsed');
+}

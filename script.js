@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbz_rsdyc-R7Vj95TzpIKh18Dqbsl5InnJDZcqexrdek8r4Z-mNtNGYyGPj4ZBFUK4zqKw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxg69c9HIZQ7XcVjPkppb_Un1XiVLwGGmE--a_LJ3YkhC6CU0chavGcS5vTBKpQHeAKAA/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
   loadFlats();

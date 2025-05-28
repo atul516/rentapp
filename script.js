@@ -4,8 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFlats();
 });
 
-// -----------------------------
-// Utility: POST wrapper
+function showLoader() {
+  document.getElementById('global-loader').style.display = 'flex';
+}
+function hideLoader() {
+  document.getElementById('global-loader').style.display = 'none';
+}
+
 function postData(data) {
   const params = new URLSearchParams();
   Object.entries(data).forEach(([key, val]) => params.append(key, val));
@@ -22,49 +27,47 @@ function postData(data) {
   });
 }
 
-// -----------------------------
-// Collapsible Section Toggle
 function toggleSection(header) {
   const section = header.parentElement;
   section.classList.toggle('collapsed');
 }
 
-// -----------------------------
-// Load flats and populate selects
 function loadFlats() {
+  showLoader();
   fetch(`${API_URL}?action=get_flats`)
     .then(res => {
-  if (!res.ok) throw new Error("Failed to load flats.");
-  return res.json();
-})
-.then(response => {
-  if (!response.success) throw new Error("Error loading flats.");
-  const flats = response.data;
+      if (!res.ok) throw new Error("Failed to load flats.");
+      return res.json();
+    })
+    .then(response => {
+      if (!response.success) throw new Error("Error loading flats.");
+      const flats = response.data;
 
-  const selects = ['rent-flat-select', 'tenant-flat-select', 'reading-flat-select', 'report-flat-select'];
-  selects.forEach(id => {
-    const select = document.getElementById(id);
-    select.innerHTML = '';
-    flats.forEach(flat => {
-      const option = document.createElement('option');
-      option.value = flat.FlatNumber;
-      option.textContent = flat.FlatNumber;
-      select.appendChild(option);
-    });
-  });
+      const selects = ['rent-flat-select', 'tenant-flat-select', 'reading-flat-select', 'report-flat-select'];
+      selects.forEach(id => {
+        const select = document.getElementById(id);
+        select.innerHTML = '';
+        flats.forEach(flat => {
+          const option = document.createElement('option');
+          option.value = flat.FlatNumber;
+          option.textContent = flat.FlatNumber;
+          select.appendChild(option);
+        });
+      });
 
-  const ul = document.getElementById('existing-flats');
-  ul.innerHTML = '';
-  flats.forEach(flat => {
-    const li = document.createElement('li');
-    li.textContent = `${flat.FlatNumber} - ${flat.TenantName}`;
-    ul.appendChild(li);
-  });
-}).catch(err => alert(err.message));
+      const ul = document.getElementById('existing-flats');
+      ul.innerHTML = '';
+      flats.forEach(flat => {
+        const li = document.createElement('li');
+        const rentInfo = flat.LatestRent ? `Rent: ₹${flat.LatestRent}` : 'No Rent Info';
+        li.textContent = `${flat.FlatNumber} - ${flat.TenantName} (${rentInfo})`;
+        ul.appendChild(li);
+      });
+    })
+    .catch(err => alert(err.message))
+    .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Add New Flat
 function addFlat() {
   const flatNum = document.getElementById('flatNum').value.trim();
   const rent = document.getElementById('rent').value.trim();
@@ -72,6 +75,7 @@ function addFlat() {
   const today = new Date().toISOString().split('T')[0];
 
   if (!flatNum || !rent || !tenant) return alert("All fields required.");
+  showLoader();
 
   postData({
     action: "add_flat",
@@ -93,17 +97,17 @@ function addFlat() {
     document.getElementById('tenant').value = '';
     loadFlats();
   })
-  .catch(err => alert(err.message));
+  .catch(err => alert(err.message))
+  .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Update Rent (append to history)
 function updateRent() {
   const flat = document.getElementById('rent-flat-select').value;
   const newRent = document.getElementById('new-rent').value.trim();
   const today = new Date().toISOString().split('T')[0];
 
   if (!flat || !newRent) return alert("Both fields required.");
+  showLoader();
 
   postData({
     action: "add_rent_history",
@@ -114,16 +118,17 @@ function updateRent() {
   .then(() => {
     alert("Rent updated.");
     document.getElementById('new-rent').value = '';
+    loadFlats();
   })
-  .catch(err => alert(err.message));
+  .catch(err => alert(err.message))
+  .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Update Tenant
 function updateTenant() {
   const flat = document.getElementById('tenant-flat-select').value;
   const newTenant = document.getElementById('new-tenant').value.trim();
   if (!flat || !newTenant) return alert("Both fields required.");
+  showLoader();
 
   postData({
     action: "update_tenant",
@@ -135,17 +140,17 @@ function updateTenant() {
     document.getElementById('new-tenant').value = '';
     loadFlats();
   })
-  .catch(err => alert(err.message));
+  .catch(err => alert(err.message))
+  .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Add Electricity Reading
 function addReading() {
   const flat = document.getElementById('reading-flat-select').value;
   const month = document.getElementById('month').value.trim();
   const reading = document.getElementById('reading').value.trim();
 
   if (!flat || !month || !reading) return alert("All fields required.");
+  showLoader();
 
   postData({
     action: "add_reading",
@@ -158,16 +163,16 @@ function addReading() {
     document.getElementById('reading').value = '';
     fetchPreviousReading();
   })
-  .catch(err => alert(err.message));
+  .catch(err => alert(err.message))
+  .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Add Electricity Rate
 function addRate() {
   const month = document.getElementById('rate-month').value.trim();
   const rate = document.getElementById('rate-value').value.trim();
 
   if (!month || !rate) return alert("Both fields required.");
+  showLoader();
 
   postData({
     action: "add_rate",
@@ -179,11 +184,10 @@ function addRate() {
     document.getElementById('rate-month').value = '';
     document.getElementById('rate-value').value = '';
   })
-  .catch(err => alert(err.message));
+  .catch(err => alert(err.message))
+  .finally(() => hideLoader());
 }
 
-// -----------------------------
-// Fetch Previous Reading
 function fetchPreviousReading() {
   const flat = document.getElementById('reading-flat-select').value;
   const month = document.getElementById('month').value.trim();
@@ -208,10 +212,9 @@ function fetchPreviousReading() {
     });
 }
 
-// -----------------------------
-// Generate Report
 async function generateReport() {
   try {
+    showLoader();
     const flat = document.getElementById('report-flat-select').value;
     const month = document.getElementById('report-month').value.trim();
     const maintenance = parseFloat(document.getElementById('maintenance').value.trim() || 0);
@@ -294,5 +297,7 @@ async function generateReport() {
     });
   } catch (err) {
     alert(err.message);
+  } finally {
+    hideLoader();
   }
 }

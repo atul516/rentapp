@@ -1,8 +1,26 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbyB4zdHp34RLE2Kjzr1HMosPwcHVSM_sLoKjfmkw1qIkUWRJUZZiu4goSySLtmQowa4Rg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzlkTA16Z-vntj0ERKb46opOjz4nPux3rG4w3ZUdsqd_elm0b8n8Z66CWQU78L4m6gNeQ/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
   loadFlats();
 });
+
+// -----------------------------
+// Utility: POST wrapper
+function postData(data) {
+  const params = new URLSearchParams();
+  Object.entries(data).forEach(([key, val]) => params.append(key, val));
+  return fetch(API_URL, {
+    method: 'POST',
+    body: params
+  }).then(res => {
+    if (!res.ok) {
+      return res.text().then(text => {
+        throw new Error(text || 'Request failed with status ' + res.status);
+      });
+    }
+    return res;
+  });
+}
 
 // -----------------------------
 // Collapsible Section Toggle
@@ -15,28 +33,34 @@ function toggleSection(header) {
 // Load flats and populate selects
 function loadFlats() {
   fetch(`${API_URL}?action=get_flats`)
-    .then(res => res.json())
-    .then(flats => {
-      const selects = ['rent-flat-select', 'tenant-flat-select', 'reading-flat-select', 'report-flat-select'];
-      selects.forEach(id => {
-        const select = document.getElementById(id);
-        select.innerHTML = '';
-        flats.forEach(flat => {
-          const option = document.createElement('option');
-          option.value = flat.FlatNumber;
-          option.textContent = flat.FlatNumber;
-          select.appendChild(option);
-        });
-      });
+    .then(res => {
+  if (!res.ok) throw new Error("Failed to load flats.");
+  return res.json();
+})
+.then(response => {
+  if (!response.success) throw new Error("Error loading flats.");
+  const flats = response.data;
 
-      const ul = document.getElementById('existing-flats');
-      ul.innerHTML = '';
-      flats.forEach(flat => {
-        const li = document.createElement('li');
-        li.textContent = `${flat.FlatNumber} - ${flat.TenantName}`;
-        ul.appendChild(li);
-      });
+  const selects = ['rent-flat-select', 'tenant-flat-select', 'reading-flat-select', 'report-flat-select'];
+  selects.forEach(id => {
+    const select = document.getElementById(id);
+    select.innerHTML = '';
+    flats.forEach(flat => {
+      const option = document.createElement('option');
+      option.value = flat.FlatNumber;
+      option.textContent = flat.FlatNumber;
+      select.appendChild(option);
     });
+  });
+
+  const ul = document.getElementById('existing-flats');
+  ul.innerHTML = '';
+  flats.forEach(flat => {
+    const li = document.createElement('li');
+    li.textContent = `${flat.FlatNumber} - ${flat.TenantName}`;
+    ul.appendChild(li);
+  });
+}).catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -49,25 +73,17 @@ function addFlat() {
 
   if (!flatNum || !rent || !tenant) return alert("All fields required.");
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: "add_flat",
-      flatNumber: flatNum,
-      tenantName: tenant
-    }),
-    headers: { 'Content-Type': 'application/json' }
+  postData({
+    action: "add_flat",
+    flatNumber: flatNum,
+    tenantName: tenant
   })
   .then(() =>
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: "add_rent_history",
-        flatNumber: flatNum,
-        rent: parseFloat(rent),
-        startDate: today
-      }),
-      headers: { 'Content-Type': 'application/json' }
+    postData({
+      action: "add_rent_history",
+      flatNumber: flatNum,
+      rent: rent,
+      startDate: today
     })
   )
   .then(() => {
@@ -76,7 +92,8 @@ function addFlat() {
     document.getElementById('rent').value = '';
     document.getElementById('tenant').value = '';
     loadFlats();
-  });
+  })
+  .catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -88,20 +105,17 @@ function updateRent() {
 
   if (!flat || !newRent) return alert("Both fields required.");
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: "add_rent_history",
-      flatNumber: flat,
-      rent: parseFloat(newRent),
-      startDate: today
-    }),
-    headers: { 'Content-Type': 'application/json' }
+  postData({
+    action: "add_rent_history",
+    flatNumber: flat,
+    rent: newRent,
+    startDate: today
   })
   .then(() => {
     alert("Rent updated.");
     document.getElementById('new-rent').value = '';
-  });
+  })
+  .catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -111,20 +125,17 @@ function updateTenant() {
   const newTenant = document.getElementById('new-tenant').value.trim();
   if (!flat || !newTenant) return alert("Both fields required.");
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: "update_tenant",
-      flatNumber: flat,
-      tenantName: newTenant
-    }),
-    headers: { 'Content-Type': 'application/json' }
+  postData({
+    action: "update_tenant",
+    flatNumber: flat,
+    tenantName: newTenant
   })
   .then(() => {
     alert("Tenant updated.");
     document.getElementById('new-tenant').value = '';
     loadFlats();
-  });
+  })
+  .catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -136,21 +147,18 @@ function addReading() {
 
   if (!flat || !month || !reading) return alert("All fields required.");
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: "add_reading",
-      flatNumber: flat,
-      month: month,
-      reading: parseFloat(reading)
-    }),
-    headers: { 'Content-Type': 'application/json' }
+  postData({
+    action: "add_reading",
+    flatNumber: flat,
+    month: month,
+    reading: reading
   })
   .then(() => {
     alert("Reading saved.");
     document.getElementById('reading').value = '';
     fetchPreviousReading();
-  });
+  })
+  .catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -161,20 +169,17 @@ function addRate() {
 
   if (!month || !rate) return alert("Both fields required.");
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: "add_rate",
-      month: month,
-      rate: parseFloat(rate)
-    }),
-    headers: { 'Content-Type': 'application/json' }
+  postData({
+    action: "add_rate",
+    month: month,
+    rate: rate
   })
   .then(() => {
     alert("Rate saved.");
     document.getElementById('rate-month').value = '';
     document.getElementById('rate-value').value = '';
-  });
+  })
+  .catch(err => alert(err.message));
 }
 
 // -----------------------------
@@ -189,68 +194,87 @@ function fetchPreviousReading() {
   }
 
   fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${month}`)
-    .then(res => res.text())
-    .then(reading => {
-      document.getElementById('previous-reading').textContent = reading;
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch previous reading.");
+      return res.json();
+    })
+    .then(response => {
+      if (!response.success) throw new Error("No previous reading found.");
+      document.getElementById('previous-reading').textContent = response.value || '-';
+    })
+    .catch(err => {
+      document.getElementById('previous-reading').textContent = '-';
+      alert(err.message);
     });
 }
 
 // -----------------------------
 // Generate Report
 async function generateReport() {
-  const flat = document.getElementById('report-flat-select').value;
-  const month = document.getElementById('report-month').value.trim();
-  const maintenance = parseFloat(document.getElementById('maintenance').value.trim() || 0);
+  try {
+    const flat = document.getElementById('report-flat-select').value;
+    const month = document.getElementById('report-month').value.trim();
+    const maintenance = parseFloat(document.getElementById('maintenance').value.trim() || 0);
 
-  if (!flat || !month) return alert("Flat and month required.");
+    if (!flat || !month) return alert("Flat and month required.");
 
-  // Get readings
-  const prevRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${month}`);
-  const prevReading = parseFloat(await prevRes.text()) || 0;
+    const prevRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${month}`);
+    if (!prevRes.ok) throw new Error("Error fetching previous reading.");
+    const prevJson = await prevRes.json();
+    if (!prevJson.success) throw new Error("No previous reading found.");
+    const prevReading = parseFloat(prevJson.value) || 0;
 
-  const readSheet = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=9999-99`);
-  const currReading = document.getElementById('reading').value.trim()
-    ? parseFloat(document.getElementById('reading').value)
-    : prevReading;
+    const currRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=9999-99`);
+    if (!currRes.ok) throw new Error("Error fetching current reading.");
+    const currJson = await currRes.json();
+    if (!currJson.success) throw new Error("No current reading found.");
+    const currReadingApi = parseFloat(currJson.value) || 0;
 
-  const unitsUsed = currReading - prevReading;
+    const currReading = document.getElementById('reading').value.trim()
+      ? parseFloat(document.getElementById('reading').value)
+      : currReadingApi || prevReading;
 
-  // Get rate
-  const rateRes = await fetch(`${API_URL}?action=get_rate&month=${month}`);
-  const rate = parseFloat(await rateRes.text()) || 0;
-  const electricityCharge = rate * unitsUsed;
+    const unitsUsed = currReading - prevReading;
 
-  // Get latest rent
-  const rentRes = await fetch(`${API_URL}?action=get_rent_history&flat=${flat}`);
-  const rentHistory = await rentRes.json();
-  const targetDate = new Date(month + '-01');
-  const latestRent = rentHistory
-    .filter(r => new Date(r.StartDate) <= targetDate)
-    .sort((a, b) => new Date(b.StartDate) - new Date(a.StartDate))[0];
+    const rateRes = await fetch(`${API_URL}?action=get_rate&month=${month}`);
+    if (!rateRes.ok) throw new Error("Error fetching rate.");
+    const rateData = await rateRes.json();
+    if (!rateData.success) throw new Error("Rate not found.");
+    const rate = parseFloat(rateData.value) || 0;
 
-  const rent = latestRent ? parseFloat(latestRent.Rent) : 0;
-  const totalCharge = rent + electricityCharge + maintenance;
+    const electricityCharge = rate * unitsUsed;
 
-  const reportDiv = document.createElement('div');
-  reportDiv.className = 'report-card';
-  reportDiv.innerHTML = `
-    <h3>Rent Report - ${flat} (${month})</h3>
-    <p>Rent: ₹${rent}</p>
-    <p>Units Used: ${unitsUsed}</p>
-    <p>Rate per Unit: ₹${rate}</p>
-    <p>Electricity: ₹${electricityCharge}</p>
-    <p>Maintenance: ₹${maintenance}</p>
-    <h4>Total: ₹${totalCharge}</h4>
-  `;
+    const rentRes = await fetch(`${API_URL}?action=get_rent_history&flat=${flat}`);
+    if (!rentRes.ok) throw new Error("Error fetching rent history.");
+    const rentHistoryData = await rentRes.json();
+    if (!rentHistoryData.success) throw new Error("Rent history not found.");
+    const rentHistory = rentHistoryData.data;
 
-  const reportPreview = document.getElementById('report-preview');
-  reportPreview.innerHTML = '';
-  reportPreview.appendChild(reportDiv);
+    const targetDate = new Date(month + '-01');
+    const latestRent = rentHistory
+      .filter(r => new Date(r.StartDate) <= targetDate)
+      .sort((a, b) => new Date(b.StartDate) - new Date(a.StartDate))[0];
+    const rent = latestRent ? parseFloat(latestRent.Rent) : 0;
 
-  // Save to backend
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({
+    const totalCharge = rent + electricityCharge + maintenance;
+
+    const reportDiv = document.createElement('div');
+    reportDiv.className = 'report-card';
+    reportDiv.innerHTML = `
+      <h3>Rent Report - ${flat} (${month})</h3>
+      <p>Rent: ₹${rent}</p>
+      <p>Units Used: ${unitsUsed}</p>
+      <p>Rate per Unit: ₹${rate}</p>
+      <p>Electricity: ₹${electricityCharge}</p>
+      <p>Maintenance: ₹${maintenance}</p>
+      <h4>Total: ₹${totalCharge}</h4>
+    `;
+
+    const reportPreview = document.getElementById('report-preview');
+    reportPreview.innerHTML = '';
+    reportPreview.appendChild(reportDiv);
+
+    postData({
       action: "save_report",
       flatNumber: flat,
       month,
@@ -260,15 +284,15 @@ async function generateReport() {
       electricityCharge,
       maintenance,
       totalCharge
-    }),
-    headers: { 'Content-Type': 'application/json' }
-  });
+    }).catch(err => alert("Error saving report: " + err.message));
 
-  // Download as JPEG
-  html2canvas(reportDiv).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `Report_${flat}_${month}.jpeg`;
-    link.href = canvas.toDataURL("image/jpeg");
-    link.click();
-  });
+    html2canvas(reportDiv).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `Report_${flat}_${month}.jpeg`;
+      link.href = canvas.toDataURL("image/jpeg");
+      link.click();
+    });
+  } catch (err) {
+    alert(err.message);
+  }
 }

@@ -59,8 +59,8 @@ function loadFlats() {
       ul.innerHTML = '';
       flats.forEach(flat => {
         const li = document.createElement('li');
-        const rentInfo = flat.LatestRent ? `Rent: ₹${flat.LatestRent}` : 'No Rent Info';
-        li.textContent = `${flat.FlatNumber} - ${flat.TenantName} (${rentInfo})`;
+        const rentInfo = flat.LatestRent ? `₹${flat.LatestRent}` : 'No Rent Info';
+        li.textContent = `Flat no: ${flat.FlatNumber} Tenant Name: ${flat.TenantName} Rent: (${rentInfo})`;
         ul.appendChild(li);
       });
     })

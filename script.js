@@ -59,8 +59,26 @@ function loadFlats() {
       ul.innerHTML = '';
       flats.forEach(flat => {
         const li = document.createElement('li');
-        const rentInfo = flat.LatestRent ? `₹${flat.LatestRent}` : 'No Rent Info';
-        li.textContent = `Flat no: ${flat.FlatNumber} Tenant Name: ${flat.TenantName} Rent: (${rentInfo})`;
+        li.style.padding = '10px';
+        li.style.border = '1px solid #ccc';
+        li.style.borderRadius = '8px';
+        li.style.marginBottom = '8px';
+        li.style.backgroundColor = '#f9f9f9';
+        li.style.listStyle = 'none';
+
+        const flatNumber = document.createElement('div');
+        flatNumber.innerHTML = `<strong>Flat No:</strong> ${flat.FlatNumber}`;
+
+        const tenantName = document.createElement('div');
+        tenantName.innerHTML = `<strong>Tenant:</strong> ${flat.TenantName || '—'}`;
+
+        const rent = document.createElement('div');
+        rent.innerHTML = `<strong>Rent:</strong> ${flat.LatestRent ? `₹${flat.LatestRent}` : 'No Rent Info'}`;
+
+        li.appendChild(flatNumber);
+        li.appendChild(tenantName);
+        li.appendChild(rent);
+
         ul.appendChild(li);
       });
     })

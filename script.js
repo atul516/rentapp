@@ -250,6 +250,10 @@ async function generateReport() {
     const flat = document.getElementById('report-flat-select').value;
     const month = document.getElementById('report-month').value.trim();
     const maintenance = parseFloat(document.getElementById('maintenance').value.trim() || 0);
+    const tenantRes = await fetch(`${API_URL}?action=get_tenant&flat=${flat}`);
+    if (!tenantRes.ok) throw new Error("Error fetching tenant name.");
+    const tenantData = await tenantRes.json();
+    const tenantName = tenantData.success ? tenantData.name : 'N/A';
 
     if (!flat || !month) return alert("Flat and month required.");
 
@@ -298,6 +302,7 @@ async function generateReport() {
     <div style="font-family: Arial, sans-serif; border: 1px solid #ccc; border-radius: 8px; padding: 20px; max-width: 500px; background: #f9f9f9;">
       <h2 style="margin-top: 0; color: #2c3e50;">🏠 Rent Report</h2>
       <h3 style="color: #34495e;">Flat: <strong>${flat}</strong></h3>
+      <h3 style="color: #34495e;">Tenant: <strong>${tenantName}</strong></h3>
       <h4 style="color: #7f8c8d;">Month: <strong>${formatMonthYear(month)}</strong></h4>
       <hr />
       <p><strong>📊 Rent:</strong> ₹${rent.toFixed(2)}</p>
@@ -305,7 +310,7 @@ async function generateReport() {
       <p><strong>⚡ Electricity Charge:</strong> ₹${electricityCharge.toFixed(2)}</p>
       <p><strong>🛠️ Maintenance:</strong> ₹${maintenance.toFixed(2)}</p>
       <hr />
-      <h3 style="color: #2c3e50;">💰 Total Amount: ₹${totalCharge.toFixed(2)}</h3>
+      <h3 style="color: #2c3e50;">Total Amount: ₹${totalCharge.toFixed(2)}</h3>
     </div>
   `;
 

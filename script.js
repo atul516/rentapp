@@ -230,6 +230,14 @@ function fetchPreviousReading() {
     });
 }
 
+function getPreviousMonth(monthStr) {
+  const [year, month] = monthStr.split('-').map(Number);
+  const prevMonthDate = new Date(year, month - 2); // JS months are 0-based
+  const prevYear = prevMonthDate.getFullYear();
+  const prevMonth = String(prevMonthDate.getMonth() + 1).padStart(2, '0');
+  return `${prevYear}-${prevMonth}`;
+}
+
 async function generateReport() {
   try {
     showLoader();
@@ -239,16 +247,18 @@ async function generateReport() {
 
     if (!flat || !month) return alert("Flat and month required.");
 
-    const prevRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${month}`);
-    if (!prevRes.ok) throw new Error("Error fetching previous reading.");
+    const prevMonth = getPreviousMonth(month);
+
+    const prevRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${prevMonth}`);
+    if (!prevRes.ok) throw new Error("Error fetching previous month's reading.");
     const prevJson = await prevRes.json();
-    if (!prevJson.success) throw new Error("No previous reading found.");
+    if (!prevJson.success) throw new Error("No previous month's reading found.");
     const prevReading = parseFloat(prevJson.value) || 0;
 
-    const currRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=9999-99`);
-    if (!currRes.ok) throw new Error("Error fetching current reading.");
+    const currRes = await fetch(`${API_URL}?action=get_previous_reading&flat=${flat}&month=${month}`);
+    if (!currRes.ok) throw new Error("Error fetching current month's reading.");
     const currJson = await currRes.json();
-    if (!currJson.success) throw new Error("No current reading found.");
+    if (!currJson.success) throw new Error("No current month's reading found.");
     const currReadingApi = parseFloat(currJson.value) || 0;
 
     const currReading = document.getElementById('reading').value.trim()

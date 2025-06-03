@@ -299,7 +299,7 @@ async function generateReport() {
     const reportDiv = document.createElement('div');
     reportDiv.className = 'report-card';
     reportDiv.innerHTML = `
-    <div style="font-family: Arial, sans-serif; border: 1px solid #ccc; border-radius: 8px; padding: 20px; max-width: 500px; background: #f9f9f9;">
+    <div style="font-family: Arial, sans-serif; border: 1px solid #ccc; border-radius: 8px; padding: 10px; max-width: 500px; background: #f9f9f9;">
       <h2 style="margin-top: 0; color: #2c3e50;">🏠 Rent Report</h2>
       <h3 style="color: #34495e;">Flat: <strong>${flat}</strong></h3>
       <h3 style="color: #34495e;">Tenant: <strong>${tenantName}</strong></h3>

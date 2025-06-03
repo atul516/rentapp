@@ -186,20 +186,17 @@ function addReading() {
 }
 
 function addRate() {
-  const month = document.getElementById('rate-month').value.trim();
   const rate = document.getElementById('rate-value').value.trim();
 
-  if (!month || !rate) return alert("Both fields required.");
+  if (!rate) return alert("Rate fields required.");
   showLoader();
 
   postData({
     action: "add_rate",
-    month: month,
     rate: rate
   })
   .then(() => {
     alert("Rate saved.");
-    document.getElementById('rate-month').value = '';
     document.getElementById('rate-value').value = '';
   })
   .catch(err => alert(err.message))
@@ -277,7 +274,7 @@ async function generateReport() {
 
     const unitsUsed = currReading - prevReading;
 
-    const rateRes = await fetch(`${API_URL}?action=get_rate&month=${month}`);
+    const rateRes = await fetch(`${API_URL}?action=get_rate`);
     if (!rateRes.ok) throw new Error("Error fetching rate.");
     const rateData = await rateRes.json();
     if (!rateData.success) throw new Error("Rate not found.");

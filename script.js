@@ -238,6 +238,12 @@ function getPreviousMonth(monthStr) {
   return `${prevYear}-${prevMonth}`;
 }
 
+function formatMonthYear(ymStr) {
+  const [year, month] = ymStr.split('-').map(Number);
+  const date = new Date(year, month - 1); // JS months are 0-based
+  return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+}
+
 async function generateReport() {
   try {
     showLoader();
@@ -289,14 +295,19 @@ async function generateReport() {
     const reportDiv = document.createElement('div');
     reportDiv.className = 'report-card';
     reportDiv.innerHTML = `
-      <h3>Rent Report - ${flat} (${month})</h3>
-      <p>Rent: ₹${rent}</p>
-      <p>Units Used: ${unitsUsed}</p>
-      <p>Rate per Unit: ₹${rate}</p>
-      <p>Electricity: ₹${electricityCharge}</p>
-      <p>Maintenance: ₹${maintenance}</p>
-      <h4>Total: ₹${totalCharge}</h4>
-    `;
+    <div style="font-family: Arial, sans-serif; border: 1px solid #ccc; border-radius: 8px; padding: 20px; max-width: 500px; background: #f9f9f9;">
+      <h2 style="margin-top: 0; color: #2c3e50;">🏠 Rent Report</h2>
+      <h3 style="color: #34495e;">Flat: <strong>${flat}</strong></h3>
+      <h4 style="color: #7f8c8d;">Month: <strong>${formatMonthYear(month)}</strong></h4>
+      <hr />
+      <p><strong>📊 Rent:</strong> ₹${rent.toFixed(2)}</p>
+      <p><strong>⚡ Units Used:</strong> ${unitsUsed} units</p>
+      <p><strong>⚡ Electricity Charge:</strong> ₹${electricityCharge.toFixed(2)}</p>
+      <p><strong>🛠️ Maintenance:</strong> ₹${maintenance.toFixed(2)}</p>
+      <hr />
+      <h3 style="color: #2c3e50;">💰 Total Amount: ₹${totalCharge.toFixed(2)}</h3>
+    </div>
+  `;
 
     const reportPreview = document.getElementById('report-preview');
     reportPreview.innerHTML = '';

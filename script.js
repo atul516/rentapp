@@ -265,17 +265,14 @@ async function generateReport() {
 
     const electricityCharge = rate * unitsUsed;
 
-    const rentRes = await fetch(`${API_URL}?action=get_rent_history&flat=${flat}`);
-    if (!rentRes.ok) throw new Error("Error fetching rent history.");
-    const rentHistoryData = await rentRes.json();
-    if (!rentHistoryData.success) throw new Error("Rent history not found.");
-    const rentHistory = rentHistoryData.data;
+    const rentRes = await fetch(`${API_URL}?action=get_latest_rent&flat=${flat}`);
+    if (!rentRes.ok) throw new Error("Error fetching latest rent.");
+    const rentData = await rentRes.json();
+    if (!rentData.success) throw new Error("Rent not found.");
+    const latestRent = rentData.data;
 
     const targetDate = new Date(month + '-01');
-    const latestRent = rentHistory
-      .filter(r => new Date(r.StartDate) <= targetDate)
-      .sort((a, b) => new Date(b.StartDate) - new Date(a.StartDate))[0];
-    const rent = latestRent ? parseFloat(latestRent.Rent) : 0;
+    const rent = latestRent ? parseFloat(latestRent) : 0;
 
     const totalCharge = rent + electricityCharge + maintenance;
 
